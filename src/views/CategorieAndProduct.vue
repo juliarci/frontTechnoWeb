@@ -46,8 +46,11 @@ import {doAjaxRequest} from "@/api";
 let data = reactive({
   // La liste des produits affichée sous forme de table
   productsList: [],
+  // La liste des categories de la dropdown liste sous forme de table
   listeCategories: []
 });
+
+// Categorie sélectionée
 let selectedCategory = ref("");
 
 function showError(error) {
@@ -60,13 +63,15 @@ function productsLoading(category) {
   // Appel à l'API pour avoir la liste des produits
   // Trié par code, descendant
   // Verbe HTTP GET par défaut
+  // Si une catégorie a été selectionnée dans la dropdown liste
   if(category){
-    doAjaxRequest("/api/categories/"+category+"/produits?sort=code,desc")
+    doAjaxRequest("/api/categories/"+category+"/produits?sort=nom,asc")
         .then((json) => {
           data.productsList = json._embedded.produits;
         })
         .catch(showError);
   }else{
+    // Si on ne filtre sur aucune catégorie
     doAjaxRequest("/api/produits?sort=nom,asc")
         .then((json) => {
           data.productsList = json._embedded.produits;
@@ -87,6 +92,9 @@ function chargeCategories() {
       .catch(showError);
 }
 
+/**
+ * Fonction utilisées lors de la sélection d'une catégorie dans la dropdown list
+ */
 function updateProducts() {
     productsLoading(selectedCategory.value);
 }
